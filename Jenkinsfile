@@ -8,6 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                // This step checks out your code from the source control.
                 checkout scm
             }
         }
@@ -24,13 +25,14 @@ pipeline {
                                   credentialsId: 'aws-credentials-id', 
                                   accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
                                   secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh 'terraform plan'
+                    sh 'terraform plan -out=plan.tfplan'
                 }
             }
         }
 
         stage('Terraform Apply') {
             when {
+                // Condition to run apply, e.g., only on the main branch.
                 branch 'main'
             }
             steps {
@@ -38,7 +40,7 @@ pipeline {
                                   credentialsId: 'aws-credentials-id', 
                                   accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
                                   secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                    sh 'terraform apply -auto-approve'
+                    sh 'terraform apply -auto-approve plan.tfplan'
                 }
             }
         }
