@@ -1,4 +1,9 @@
-variable "region" {
-  description = "AWS region"
-  default     = "ap-east-1"
+variable "aws_region" {
+    description = "AWS Region"
+    type = string
+}
+
+variable "bucket_name" {
+    description = "Name of the bucket"
+    type = string
 }
