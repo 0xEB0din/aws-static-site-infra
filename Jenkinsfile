@@ -2,13 +2,12 @@ pipeline {
     agent any
 
     environment {
-        AWS_DEFAULT_REGION = 'us-east-1'  // Change to your AWS region
+        AWS_DEFAULT_REGION = 'us-east-1'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                // This step checks out your code from the source control.
                 checkout scm
             }
         }
@@ -21,13 +20,17 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                sh 'terraform plan'
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
+                                  credentialsId: 'aws-credentials-id', 
+                                  accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
+                                  secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                    sh 'terraform plan'
+                }
             }
         }
 
         stage('Terraform Apply') {
             when {
-                // Condition to run apply, e.g., only on the main branch.
                 branch 'main'
             }
             steps {
@@ -35,7 +38,6 @@ pipeline {
                                   credentialsId: 'aws-credentials-id', 
                                   accessKeyVariable: 'AWS_ACCESS_KEY_ID', 
                                   secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-
                     sh 'terraform apply -auto-approve'
                 }
             }
