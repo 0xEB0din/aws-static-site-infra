@@ -31,10 +31,7 @@ pipeline {
         }
 
         stage('Terraform Apply') {
-            when {
-                // Condition to run apply, e.g., only on the main branch.
-                branch 'main'
-            }
+            // Removed the when conditional here
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', 
                                   credentialsId: 'aws-credentials-id', 
