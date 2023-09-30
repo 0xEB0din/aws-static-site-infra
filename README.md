@@ -1,4 +1,4 @@
-# aws-static-site-infra
+# AWS Static Site Infra
 Infrastructure as code for deploying a static website on AWS S3, accelerated by CloudFront CDN and CI/CD pipeline with Jenkins
 
 1. **Introduction**:
