@@ -154,11 +154,30 @@ resource "aws_s3_bucket_website_configuration" "hosting_bucket_website_configura
   }
 }
 
-resource "aws_s3_bucket_object" "hosting_bucket_files" {
-  for_each = fileset("${path.module}/site", "**/*") # All files in '/site' to be uploaded
+locals {
+  content_types = {
+    "html" = "text/html",
+    "css"  = "text/css",
+    "js"   = "application/javascript",
+    "json" = "application/json",
+    "png"  = "image/png",
+    "jpg"  = "image/jpeg",
+    "jpeg" = "image/jpeg"
+  }
+}
 
-  bucket = aws_s3_bucket.hosting_bucket.id
-  key    = each.value
-  source = "${path.module}/site/${each.value}"
-  etag   = filemd5("${path.module}/site/${each.value}")
+resource "aws_s3_bucket_object" "website_files" {
+  for_each = fileset("${path.module}/site", "**/*")
+  bucket   = aws_s3_bucket.hosting_bucket.bucket
+  key      = each.value
+  source   = "${path.module}/site/${each.value}"
+  etag     = filemd5("${path.module}/site/${each.value}")
+  content_type = lookup(
+    local.content_types,
+    element(
+      reverse(split(".", each.value)),
+      0
+    ),
+    "application/octet-stream"
+  )
 }
